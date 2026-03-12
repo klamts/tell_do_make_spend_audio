@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Collocations – Tell, Do, Make, Spend</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1B2A4A;min-height:100vh}
+
+/* Header */
+header{background:linear-gradient(135deg,#1B2A4A 0%,#0D7377 100%);color:#fff;padding:18px 16px 14px;text-align:center}
+header h1{font-size:1.5rem;font-weight:800;letter-spacing:.5px;margin-bottom:4px}
+header p{font-size:.85rem;opacity:.82}
+
+/* Lang bar */
+.lang-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 16px;background:#162238;border-bottom:1px solid #0a1826}
+.lang-lbl{color:rgba(255,255,255,.55);font-size:.8rem}
+.lang-btn{padding:5px 16px;border:2px solid rgba(255,255,255,.35);border-radius:20px;font-size:.82rem;font-weight:700;cursor:pointer;color:#fff;background:transparent;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.lang-btn.active{background:#F5A623;border-color:#F5A623;color:#1B2A4A}
+
+/* Tabs */
+.verb-tabs{display:flex;justify-content:center;gap:8px;padding:13px 10px 0;flex-wrap:wrap}
+.verb-tab{padding:8px 20px;border:none;border-radius:30px;font-size:.92rem;font-weight:700;cursor:pointer;opacity:.45;color:#fff;transition:all .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.verb-tab.active{opacity:1;transform:scale(1.07);box-shadow:0 4px 14px rgba(0,0,0,.2)}
+[data-verb="TELL"]{background:#0D7377}
+[data-verb="DO"]{background:#E67E22}
+[data-verb="MAKE"]{background:#8E44AD}
+[data-verb="SPEND"]{background:#27AE60}
+
+/* Sections */
+.verb-section{display:none;padding:14px 11px 60px;max-width:880px;margin:0 auto}
+.verb-section.active{display:block}
+
+.verb-header{padding:15px 18px;border-radius:14px;color:#fff;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.verb-header h2{font-size:1.45rem;font-weight:800}
+.verb-header .vsub{font-size:.85rem;opacity:.88;margin-top:3px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:3px 11px;font-size:.78rem;font-weight:600}
+
+/* Legend */
+.legend{display:flex;gap:10px;flex-wrap:wrap;background:#fff;border-radius:10px;padding:9px 13px;margin-bottom:12px;font-size:.76rem;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.li{display:flex;align-items:center;gap:4px}
+.ld{width:9px;height:9px;border-radius:50%}
+
+.sec-info{text-align:center;font-size:.78rem;color:#888;margin-bottom:11px}
+
+/* Play all */
+.play-all{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border:none;border-radius:10px;color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:14px;transition:opacity .2s,transform .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.play-all:active{transform:scale(.98)}
+
+/* Blocks */
+.cblock{background:#fff;border-radius:14px;margin-bottom:13px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.bhead{display:flex;align-items:center;gap:9px;padding:10px 13px;color:#fff;font-weight:700;font-size:.97rem}
+.bnum{background:rgba(255,255,255,.22);border-radius:50%;width:23px;height:23px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;margin-left:auto}
+
+/* Audio rows */
+.arow{border-bottom:1px solid #f0f0f0}
+.arow:last-child{border-bottom:none}
+.arow-main{display:flex;align-items:center;gap:9px;padding:9px 13px}
+.arow:hover .arow-main{background:#f8fafc}
+
+.rnum{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;color:#fff}
+.rtype{font-size:.68rem;font-weight:700;text-transform:uppercase;width:20px;flex-shrink:0}
+.rtype.Q{color:#2980B9}.rtype.A1{color:#27AE60}.rtype.A2{color:#E67E22}.rtype.EX{color:#8E44AD}
+
+.rtxt{flex:1;font-size:.9rem;line-height:1.45}
+.rtxt b{font-weight:700}
+.rvn{display:none;font-size:.79rem;color:#5A7184;font-style:italic;margin-top:2px;line-height:1.35}
+.show-vn .rvn{display:block}
+
+.qt{display:inline-block;font-size:.64rem;font-weight:700;padding:1px 6px;border-radius:9px;margin-left:4px;vertical-align:middle}
+.qt.what{background:#EBF5FB;color:#2980B9}
+.qt.how{background:#E8F8F5;color:#0D7377}
+.qt.who{background:#F5EEF8;color:#8E44AD}
+.qt.docan{background:#FEF9E7;color:#E67E22}
+
+/* Buttons common */
+.cbtn{background:none;border:2px solid #dde3ea;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .18s;font-size:1rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-appearance:none}
+.cbtn:active{transform:scale(.9)}
+
+/* Play model */
+.pbtn{color:#5A7184}
+.pbtn.playing{color:#fff!important;border-color:transparent!important}
+
+/* Record */
+.rbtn{color:#E74C3C}
+.rbtn.recording{background:#E74C3C;border-color:#E74C3C;color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,.4)}50%{box-shadow:0 0 0 6px rgba(231,76,60,0)}}
+
+/* Play recording */
+.prbtn{color:#27AE60;display:none}
+.prbtn.has-rec{display:flex}
+.prbtn.pr-playing{background:#27AE60;border-color:#27AE60;color:#fff}
+
+/* Rec area */
+.rec-area{display:none;padding:0 13px 9px}
+.rec-area.open{display:block}
+.rec-bar{display:flex;align-items:center;gap:7px;background:#fff8f8;border:1px solid #fcc;border-radius:8px;padding:7px 11px;font-size:.79rem}
+.rec-timer{color:#E74C3C;font-weight:700;min-width:32px;font-size:.82rem}
+.wavebox{flex:1;height:26px;overflow:hidden}
+canvas.wv{width:100%;height:26px;display:block}
+.rec-hint{font-size:.7rem;color:#aaa;white-space:nowrap}
+
+/* Notice */
+.notice{background:#FFF3CD;border:1px solid #F5A623;border-radius:8px;padding:9px 13px;font-size:.8rem;color:#856404;margin:8px 11px;display:none}
+.notice.show{display:block}
+
+@media(max-width:480px){
+  .verb-tab{padding:7px 13px;font-size:.82rem}
+  header h1{font-size:1.2rem}
+  .rtxt{font-size:.84rem}
+  .cbtn{width:34px;height:34px;font-size:.9rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📢 Collocations – Audio Practice</h1>
+  <p>TELL &nbsp;•&nbsp; DO &nbsp;•&nbsp; MAKE &nbsp;•&nbsp; SPEND &nbsp;|&nbsp; ▶ nghe &nbsp;•&nbsp; 🎙 ghi âm &nbsp;•&nbsp; 🟢 nghe lại</p>
+</header>
+
+<div class="lang-bar">
+  <span class="lang-lbl">Phụ đề:</span>
+  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 English</button>
+  <button class="lang-btn" id="btn-vn" onclick="setLang('vn')">🇻🇳 Tiếng Việt</button>
+</div>
+
+<div id="mic-notice" class="notice">⚠️ Vui lòng cho phép truy cập microphone để dùng tính năng ghi âm.</div>
+
+<div class="verb-tabs">
+  <button class="verb-tab active" data-verb="TELL" onclick="switchVerb('TELL')">📣 TELL</button>
+  <button class="verb-tab"        data-verb="DO"   onclick="switchVerb('DO')">✅ DO</button>
+  <button class="verb-tab"        data-verb="MAKE" onclick="switchVerb('MAKE')">🔨 MAKE</button>
+  <button class="verb-tab"        data-verb="SPEND"onclick="switchVerb('SPEND')">⏰ SPEND</button>
+</div>
+
+<div id="app"></div>
+
+<script>
+/* ─── GitHub base URL ─────────────────────────────────── */
+const BASE = 'https://raw.githubusercontent.com/klamts/tell_do_make_spend_audio/main/web/audio/';
+
+/* ─── Content data ────────────────────────────────────── */
+// Each item: [wavFile, type, english, vietnamese, qtype]
+// types: Q=question  A1=yes-answer  A2=no/different  EX=extra question
+const VERBS = {
+  TELL:{
+    color:'#0D7377', grad:'linear-gradient(135deg,#0D7377,#14A085)',
+    sub:'Dùng khi truyền đạt thông tin / kể lại',
+    badges:['a story','the time','a joke','a lie','the truth'],
+    groups:[
+      {icon:'📖',label:'tell a story',items:[
+        [1,'Q','When did you last <b>tell a story</b>?','Lần cuối bạn <b>kể chuyện</b> là khi nào?','what'],
+        [2,'A1','I told a story to my little brother last night.','Tối qua tôi đã kể chuyện cho em trai nghe.',''],
+        [3,'A2',"I haven't told any stories recently — too busy!",'Dạo này tôi chưa kể chuyện gì — bận quá!',''],
+        [4,'EX','Who in your family can <b>tell</b> good stories?','Ai trong gia đình bạn kể chuyện hay?','who'],
+      ]},
+      {icon:'🕐',label:'tell the time',items:[
+        [5,'Q','Can you <b>tell the time</b> without your phone?','Bạn có thể <b>xem giờ</b> không cần điện thoại không?','docan'],
+        [6,'A1','Yes! I can tell the time on an analogue clock.','Được! Tôi đọc được đồng hồ kim.',''],
+        [7,'A2','I always need my phone to check the time!','Tôi luôn cần điện thoại để xem giờ!',''],
+        [8,'EX','How did you learn to <b>tell the time</b>?','Bạn học xem giờ như thế nào?','how'],
+      ]},
+      {icon:'😂',label:'tell a joke',items:[
+        [9,'Q','When did you last <b>tell a joke</b>?','Lần cuối bạn <b>kể chuyện cười</b> là khi nào?','what'],
+        [10,'A1','I told a joke at lunch — everyone laughed!','Tôi kể chuyện cười lúc ăn trưa — mọi người cười ầm!',''],
+        [11,'A2',"I'm not good at jokes — I forget the punchline!",'Tôi không giỏi kể chuyện cười — hay quên câu kết!',''],
+        [12,'EX','Who tells the funniest jokes in your family?','Ai trong gia đình bạn kể chuyện hài nhất?','who'],
+      ]},
+      {icon:'🤥',label:'tell a lie',items:[
+        [13,'Q','When did you last <b>tell a lie</b>?','Lần cuối bạn <b>nói dối</b> là khi nào?','what'],
+        [14,'A1','I told a small lie — I said I had finished homework!','Tôi nói dối nhỏ — bảo đã làm xong bài tập!',''],
+        [15,'A2','I try never to tell lies — honesty matters.','Tôi cố không nói dối — sự thành thật quan trọng hơn.',''],
+        [16,'EX','Why is it better to <b>tell the truth</b> than a lie?','Tại sao nói thật lại tốt hơn nói dối?','how'],
+      ]},
+      {icon:'💬',label:'tell the truth',items:[
+        [17,'Q','Do you always <b>tell the truth</b>?','Bạn có luôn <b>nói thật</b> không?','docan'],
+        [18,'A1','Yes, I always try to tell the truth even when hard.','Có, tôi luôn cố nói thật dù khó.',''],
+        [19,'A2','Sometimes I tell a small lie to avoid hurting feelings.','Đôi khi tôi nói dối nhỏ để tránh làm tổn thương người khác.',''],
+        [20,'EX','How do you feel when someone does not tell you the truth?','Bạn cảm thấy thế nào khi ai đó không nói thật với bạn?','how'],
+      ]},
+    ]
+  },
+  DO:{
+    color:'#E67E22', grad:'linear-gradient(135deg,#E67E22,#F39C12)',
+    sub:'Dùng cho các hoạt động / nhiệm vụ thường ngày',
+    badges:['chores','homework','the dishes','exercise','your best'],
+    groups:[
+      {icon:'🏠',label:'do chores',items:[
+        [1,'Q','What kind of chores do you <b>do</b> at home?','Bạn <b>làm</b> những việc nhà gì?','what'],
+        [2,'A1','I do the dishes and sweep the floor every day.','Tôi rửa chén và quét nhà mỗi ngày.',''],
+        [3,'A2',"I don't do many chores — my parents do most!",'Tôi không làm nhiều việc nhà — ba mẹ làm hầu hết!',''],
+        [4,'EX','How often do you <b>do chores</b>?','Bạn <b>làm việc nhà</b> bao thường xuyên?','how'],
+      ]},
+      {icon:'📝',label:'do homework',items:[
+        [5,'Q','When do you usually <b>do your homework</b>?','Bạn thường <b>làm bài tập</b> vào lúc nào?','what'],
+        [6,'A1','I do homework right after school before dinner.','Tôi làm bài ngay sau khi về nhà, trước bữa tối.',''],
+        [7,'A2','I always leave homework until late at night!','Tôi luôn để bài tập đến tận tối mới làm!',''],
+        [8,'EX','How long does it take you to <b>do your homework</b>?','Bạn mất bao lâu để làm bài tập?','how'],
+      ]},
+      {icon:'🍽️',label:'do the dishes',items:[
+        [9,'Q','Do you <b>do the dishes</b> in your family?','Bạn có <b>rửa chén</b> trong gia đình không?','docan'],
+        [10,'A1','Yes! I do the dishes every evening after dinner.','Có! Tôi rửa chén mỗi tối sau bữa ăn.',''],
+        [11,'A2','We have a dishwasher so nobody washes by hand!','Nhà tôi có máy rửa chén nên không ai rửa tay!',''],
+        [12,'EX','Who usually <b>does the dishes</b> in your family?','Ai thường <b>rửa chén</b> trong gia đình bạn?','who'],
+      ]},
+      {icon:'🏃',label:'do exercise',items:[
+        [13,'Q','When did you last <b>do exercise</b>?','Lần cuối bạn <b>tập thể dục</b> là khi nào?','what'],
+        [14,'A1','I did exercise yesterday — I went for a run.','Hôm qua tôi tập thể dục — đi chạy bộ.',''],
+        [15,'A2',"I haven't done exercise this week — I need to start!",'Tuần này tôi chưa tập gì — cần bắt đầu thôi!',''],
+        [16,'EX','What kind of exercise do you like to <b>do</b>?','Bạn thích tập loại thể dục nào?','what'],
+      ]},
+      {icon:'⭐',label:'do your best',items:[
+        [17,'Q','Do you always <b>do your best</b> at school?','Bạn có luôn <b>cố hết sức</b> ở trường không?','docan'],
+        [18,'A1','Yes, I always try to do my best even in hard subjects.','Có, tôi luôn cố hết sức dù môn khó.',''],
+        [19,'A2','Sometimes I get lazy — I need to do my best more!','Đôi khi tôi lười — cần cố gắng hơn!',''],
+        [20,'EX','How do you feel when you have <b>done your best</b>?','Bạn cảm thấy thế nào khi đã cố hết sức?','how'],
+      ]},
+    ]
+  },
+  MAKE:{
+    color:'#8E44AD', grad:'linear-gradient(135deg,#8E44AD,#9B59B6)',
+    sub:'Dùng khi tạo ra / gây ra điều gì đó',
+    badges:['a fire','a mistake','friends','noise','things'],
+    groups:[
+      {icon:'🔥',label:'make a fire',items:[
+        [1,'Q','Do you know how to <b>make a fire</b>?','Bạn có biết cách <b>nhóm lửa</b> không?','docan'],
+        [2,'A1','Yes! I learned at summer camp last year.','Có! Tôi học ở trại hè năm ngoái.',''],
+        [3,'A2',"No, I've never tried — sounds dangerous!",'Chưa, tôi chưa thử bao giờ — nghe nguy hiểm quá!',''],
+        [4,'EX','Where did you make the fire — indoors or outdoors?','Bạn nhóm lửa ở đâu — trong nhà hay ngoài trời?','what'],
+      ]},
+      {icon:'❌',label:'make a mistake',items:[
+        [5,'Q','When did you last <b>make a mistake</b>?','Lần cuối bạn <b>mắc lỗi</b> là khi nào?','what'],
+        [6,'A1','I made a mistake in my maths test — I added wrong!','Tôi mắc lỗi trong bài kiểm tra toán — cộng sai!',''],
+        [7,'A2',"I try to be careful so I don't make too many mistakes.",'Tôi cố thận trọng để không mắc nhiều lỗi.',''],
+        [8,'EX','What do you do when you <b>make a mistake</b>?','Bạn làm gì khi mắc lỗi?','what'],
+      ]},
+      {icon:'🤝',label:'make friends',items:[
+        [9,'Q','Is it easy for you to <b>make friends</b>?','Bạn có dễ <b>kết bạn</b> không?','docan'],
+        [10,'A1','Yes! I love talking so I make friends easily.','Có! Tôi thích nói chuyện nên kết bạn dễ lắm.',''],
+        [11,'A2',"I'm shy — it takes me a while to make new friends.",'Tôi hơi nhút nhát — cần thời gian để kết bạn mới.',''],
+        [12,'EX','How did you make your best friend?','Bạn đã kết bạn với người thân nhất như thế nào?','how'],
+      ]},
+      {icon:'📢',label:'make noise',items:[
+        [13,'Q','Do you ever <b>make noise</b> when you should be quiet?','Bạn có lúc nào <b>gây ồn</b> khi đang phải yên lặng không?','docan'],
+        [14,'A1','Yes! I sometimes make noise in the library by accident.','Có! Đôi khi tôi vô tình gây ồn trong thư viện.',''],
+        [15,'A2',"No, I'm usually very quiet — I hate making noise!",'Không, tôi thường rất yên lặng — ghét gây ồn!',''],
+        [16,'EX','Who makes the most noise in your house?','Ai gây ồn nhiều nhất trong nhà bạn?','who'],
+      ]},
+      {icon:'🎨',label:'make things',items:[
+        [17,'Q','Do you like to <b>make things</b> with your hands?','Bạn có thích <b>làm đồ thủ công</b> bằng tay không?','docan'],
+        [18,'A1','Yes! I made a wooden box last weekend.','Có! Tôi đã làm một hộp gỗ cuối tuần trước.',''],
+        [19,'A2',"I'm not very creative — I prefer buying to making!",'Tôi không sáng tạo lắm — thích mua hơn tự làm!',''],
+        [20,'EX','What is the best thing you have ever made?','Thứ tốt nhất bạn từng tự làm là gì?','what'],
+      ]},
+    ]
+  },
+  SPEND:{
+    color:'#27AE60', grad:'linear-gradient(135deg,#27AE60,#2ECC71)',
+    sub:'Dùng khi sử dụng thời gian hoặc tiền bạc',
+    badges:['time','money','the weekend','the holiday','the evening'],
+    groups:[
+      {icon:'⏰',label:'spend time',items:[
+        [1,'Q','How often do you and your family <b>spend time</b> together?','Bạn và gia đình <b>dành thời gian</b> bên nhau bao thường xuyên?','how'],
+        [2,'A1','We spend time together every evening after dinner.','Chúng tôi dành thời gian bên nhau mỗi tối sau bữa ăn.',''],
+        [3,'A2','We only spend time together at weekends — too busy!','Chúng tôi chỉ có thể bên nhau vào cuối tuần — bận quá!',''],
+        [4,'EX','What do you like to do when you <b>spend time</b> with family?','Bạn thích làm gì khi dành thời gian cùng gia đình?','what'],
+      ]},
+      {icon:'💰',label:'spend money',items:[
+        [5,'Q','What do you like to <b>spend money</b> on?','Bạn thích <b>tiêu tiền</b> vào việc gì?','what'],
+        [6,'A1','I like to spend money on books and snacks!','Tôi thích tiêu tiền mua sách và đồ ăn vặt!',''],
+        [7,'A2',"I try to save — I'm saving for a new bike!",'Tôi cố dành dụm — đang tiết kiệm mua xe đạp mới!',''],
+        [8,'EX','How much pocket money do you <b>spend</b> each week?','Mỗi tuần bạn tiêu bao nhiêu tiền tiêu vặt?','how'],
+      ]},
+      {icon:'📅',label:'spend the weekend',items:[
+        [9,'Q','How did you <b>spend the weekend</b>?','Bạn đã <b>dành cuối tuần</b> như thế nào?','how'],
+        [10,'A1','I spent the weekend at the beach — amazing!','Tôi dành cuối tuần ở bãi biển — tuyệt vời!',''],
+        [11,'A2','I spent the weekend at home doing homework and resting.','Tôi dành cuối tuần ở nhà làm bài và nghỉ ngơi.',''],
+        [12,'EX','Where would you love to <b>spend</b> your next weekend?','Bạn muốn dành cuối tuần tới ở đâu?','what'],
+      ]},
+      {icon:'🏖️',label:'spend the holiday',items:[
+        [13,'Q','How did you <b>spend your last holiday</b>?','Bạn đã <b>dành kỳ nghỉ</b> vừa rồi như thế nào?','how'],
+        [15,'A1','I spent my holiday visiting grandparents in the countryside.','Tôi dành kỳ nghỉ thăm ông bà ở quê.',''],
+        [16,'A2','I spent my holiday at home — it was relaxing actually!','Tôi ở nhà suốt kỳ nghỉ — thực ra cũng thư giãn!',''],
+        [17,'EX','Where would you like to <b>spend</b> your next holiday?','Bạn muốn dành kỳ nghỉ tiếp theo ở đâu?','what'],
+      ]},
+      {icon:'🌙',label:'spend the evening',items:[
+        [18,'Q','How do you usually <b>spend your evenings</b>?','Bạn thường <b>dành buổi tối</b> như thế nào?','how'],
+        [19,'A1','I usually spend the evening reading or watching TV.','Tôi thường dành buổi tối đọc sách hoặc xem TV.',''],
+        [20,'A2','I spend most evenings doing homework — very busy!','Tôi dành hầu hết buổi tối làm bài — bận lắm!',''],
+        [9,'EX','What is your favourite way to <b>spend</b> a free evening?','Cách yêu thích của bạn để dành một buổi tối rảnh là gì?','what'],
+      ]},
+    ]
+  }
+};
+
+/* ─── State ──────────────────────────────────────────────── */
+const verbColors = {TELL:'#0D7377',DO:'#E67E22',MAKE:'#8E44AD',SPEND:'#27AE60'};
+let modelAudio   = null;  // currently playing model audio element
+let modelBtn     = null;  // its play button
+let isPlayingAll = false;
+let playAllQueue = [];
+let playAllIdx   = 0;
+
+let recAudio     = null;  // currently playing-back recording
+let recPlayBtn   = null;
+
+let recorder     = null;
+let recRowId     = null;
+let recStream    = null;
+let recTimer     = null;
+let recSecs      = 0;
+let analyser     = null;
+let animId       = null;
+const recBlobs   = {};    // rowId → {blob, url}
+
+/* ─── Build UI ───────────────────────────────────────────── */
+function build(){
+  const app = document.getElementById('app');
+  Object.keys(VERBS).forEach(verb=>{
+    const V = VERBS[verb];
+    const sec = document.createElement('div');
+    sec.className = 'verb-section'+(verb==='TELL'?' active':'');
+    sec.id = 'sec-'+verb;
+    sec.innerHTML = `<div class="inner" style="max-width:880px;margin:0 auto;padding-top:13px">
+      <div class="verb-header" style="background:${V.grad}">
+        <h2>${verb}</h2>
+        <div class="vsub">${V.sub}</div>
+        <div class="badges">${V.badges.map(b=>`<span class="badge">${b}</span>`).join('')}</div>
+      </div>
+      <div class="legend">
+        <div class="li"><div class="ld" style="background:#2980B9"></div>Question</div>
+        <div class="li"><div class="ld" style="background:#27AE60"></div>✅ Yes</div>
+        <div class="li"><div class="ld" style="background:#E67E22"></div>❌ No/Alt</div>
+        <div class="li"><div class="ld" style="background:#8E44AD"></div>Follow-up</div>
+        <div class="li">🎙 Ghi âm</div>
+        <div class="li">🟢 Nghe lại</div>
+      </div>
+      <div class="sec-info" id="si-${verb}"></div>
+      <button class="play-all" id="pa-${verb}" style="background:${V.color}" onclick="playAll('${verb}')">▶ Play All – ${verb}</button>
+      <div id="blks-${verb}"></div>
+    </div>`;
+    app.appendChild(sec);
+
+    const blks = sec.querySelector('#blks-'+verb);
+    let gIdx = 1;
+    V.groups.forEach(grp=>{
+      const items = grp.items;
+      const block = document.createElement('div');
+      block.className='cblock';
+      block.innerHTML=`<div class="bhead" style="background:${V.color}">
+        <span>${grp.icon}</span><span>${grp.label}</span>
+        <span class="bnum">${items[0][0]}–${items[items.length-1][0]}</span>
+      </div><div class="rows" id="r-${verb}-${gIdx}"></div>`;
+      blks.appendChild(block);
+      const rowsDiv = block.querySelector('.rows');
+
+      items.forEach(([wav,type,en,vn,qtc])=>{
+        const rid = `${verb}_${wav}_${gIdx}`;
+        const src = `${BASE}${verb.toLowerCase()}/${wav}.wav`;
+        const typeColors={Q:'#2980B9',A1:'#27AE60',A2:'#E67E22',EX:'#8E44AD'};
+        const tc = typeColors[type]||'#aaa';
+        const tlabel = type==='A1'?'A✅':type==='A2'?'A❌':type;
+        const qtSpan = qtc?`<span class="qt ${qtc}">${qtc==='docan'?'Do/Can':qtc.charAt(0).toUpperCase()+qtc.slice(1)}</span>`:'';
+        const row = document.createElement('div');
+        row.className='arow';
+        row.id='row-'+rid;
+        row.innerHTML=`
+          <div class="arow-main">
+            <div class="rnum" style="background:${tc}">${gIdx}</div>
+            <span class="rtype ${type}">${tlabel}</span>
+            <div class="rtxt">
+              <div>${en}${qtSpan}</div>
+              <div class="rvn">${vn}</div>
+            </div>
+            <button class="cbtn rbtn" id="rb-${rid}" title="Ghi âm" onclick="toggleRec('${rid}','${src}',this)">🎙</button>
+            <button class="cbtn prbtn" id="prb-${rid}" title="Nghe lại ghi âm" onclick="playRec('${rid}',this)">🟢</button>
+            <button class="cbtn pbtn" id="pb-${rid}" style="color:${tc}" title="Nghe mẫu" onclick="playModel('${src}','${verb}',this)">▶</button>
+          </div>
+          <div class="rec-area" id="ra-${rid}">
+            <div class="rec-bar">
+              <span>🔴</span>
+              <span class="rec-timer" id="rt-${rid}">0:00</span>
+              <div class="wavebox"><canvas class="wv" id="cv-${rid}"></canvas></div>
+              <span class="rec-hint">tap 🎙 to stop</span>
+            </div>
+          </div>`;
+        rowsDiv.appendChild(row);
+        gIdx++;
+      });
+      gIdx = gIdx; // keep counter across groups
+    });
+    // update info
+    const totalRows = V.groups.reduce((a,g)=>a+g.items.length,0);
+    const si = sec.querySelector('#si-'+verb);
+    if(si) si.textContent = totalRows+' clips — ▶ nghe mẫu  •  🎙 ghi âm  •  🟢 nghe lại';
+  });
+}
+build();
+
+/* ─── Language ───────────────────────────────────────────── */
+function setLang(l){
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('btn-vn').classList.toggle('active',l==='vn');
+  document.body.classList.toggle('show-vn',l==='vn');
+}
+
+/* ─── Tab switch ─────────────────────────────────────────── */
+function switchVerb(verb){
+  stopAll();
+  document.querySelectorAll('.verb-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.verb-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sec-'+verb).classList.add('active');
+  document.querySelector('[data-verb="'+verb+'"]').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ─── Play model audio ───────────────────────────────────── */
+function playModel(src, verb, btn){
+  // stop rec playback
+  stopRecPlayback();
+  // stop play-all if different verb
+  if(isPlayingAll){
+    const pa = document.getElementById('pa-'+verb);
+    if(!pa || !pa.textContent.includes('Stop')) stopAll();
+  }
+
+  if(modelAudio){
+    modelAudio.pause();
+    resetModelBtn(modelBtn);
+    if(modelBtn===btn && !isPlayingAll){modelAudio=null;modelBtn=null;return;}
+  }
+  const a = new Audio(src);
+  a.preload='none';
+  modelAudio=a; modelBtn=btn;
+  const c=verbColors[verb]||'#0D7377';
+  btn.classList.add('playing');
+  btn.style.background=c;
+  btn.style.borderColor=c;
+  btn.textContent='⏸';
+
+  const p=a.play();
+  if(p) p.catch(()=>{resetModelBtn(btn);if(isPlayingAll)advPlayAll();});
+  a.onended=()=>{resetModelBtn(btn);modelAudio=null;modelBtn=null;if(isPlayingAll)advPlayAll();};
+  a.onerror =()=>{resetModelBtn(btn);if(isPlayingAll)advPlayAll();};
+}
+function resetModelBtn(btn){
+  if(!btn)return;
+  btn.classList.remove('playing');
+  btn.style.background='';btn.style.borderColor='';btn.textContent='▶';
+}
+
+/* ─── Play All ───────────────────────────────────────────── */
+function playAll(verb){
+  if(isPlayingAll){stopAll();return;}
+  const sec=document.getElementById('sec-'+verb);
+  if(!sec)return;
+  playAllQueue=Array.from(sec.querySelectorAll('.pbtn'));
+  playAllIdx=0;isPlayingAll=true;
+  const pa=document.getElementById('pa-'+verb);
+  if(pa)pa.textContent='⏹ Stop';
+  advPlayAll();
+}
+function advPlayAll(){
+  if(playAllIdx>=playAllQueue.length){stopAll();return;}
+  const btn=playAllQueue[playAllIdx++];
+  const row=btn.closest('.arow');
+  if(row){row.style.background='#fffde7';setTimeout(()=>row.style.background='',1800);}
+  // parse src & verb from onclick attr
+  const oc=btn.getAttribute('onclick')||'';
+  const m=oc.match(/playModel\('([^']+)','([^']+)'/);
+  if(m)playModel(m[1],m[2],btn); else advPlayAll();
+}
+function stopAll(){
+  isPlayingAll=false;
+  if(modelAudio){modelAudio.pause();modelAudio=null;}
+  resetModelBtn(modelBtn);modelBtn=null;
+  document.querySelectorAll('.play-all').forEach(b=>{
+    const m=(b.getAttribute('onclick')||'').match(/'(\w+)'/);
+    if(m)b.textContent='▶ Play All – '+m[1];
+  });
+  playAllQueue=[];playAllIdx=0;
+}
+
+/* ─── Recording ──────────────────────────────────────────── */
+async function toggleRec(rid, src, btn){
+  // If this row already recording → stop
+  if(recRowId===rid){stopRec();return;}
+  // Stop any other recording
+  if(recRowId)stopRec();
+  // Stop any model audio
+  stopAll();
+  stopRecPlayback();
+
+  // Clear previous recording for this row
+  if(recBlobs[rid]){URL.revokeObjectURL(recBlobs[rid].url);delete recBlobs[rid];}
+  const prb=document.getElementById('prb-'+rid);
+  if(prb)prb.classList.remove('has-rec');
+
+  // Get mic — request fresh each time (iPad reliability)
+  try{
+    if(recStream){recStream.getTracks().forEach(t=>t.stop());recStream=null;}
+    recStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }catch(e){document.getElementById('mic-notice').classList.add('show');return;}
+  document.getElementById('mic-notice').classList.remove('show');
+
+  // AudioContext for waveform
+  const AC=window.AudioContext||window.webkitAudioContext;
+  const actx=new AC();
+  // Resume AudioContext on iOS (requires user gesture — we already have it)
+  if(actx.state==='suspended')await actx.resume();
+  const msrc=actx.createMediaStreamSource(recStream);
+  analyser=actx.createAnalyser();analyser.fftSize=512;
+  msrc.connect(analyser);
+
+  // Pick mime type supported by this browser
+  const mime=(['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4','']
+    .find(m=>m===''||MediaRecorder.isTypeSupported(m)))||'';
+  const opts=mime?{mimeType:mime}:{};
+  const mr=new MediaRecorder(recStream,opts);
+  const chunks=[];
+  mr.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
+  mr.onstop=()=>{
+    const blob=new Blob(chunks,{type:mime||'audio/wav'});
+    const url=URL.createObjectURL(blob);
+    recBlobs[rid]={blob,url};
+    const p=document.getElementById('prb-'+rid);
+    if(p)p.classList.add('has-rec');
+    try{actx.close();}catch(e){}
+    cancelAnimationFrame(animId);analyser=null;
+  };
+  mr.start(50);
+  recorder=mr;recRowId=rid;recSecs=0;
+  btn.classList.add('recording');
+  const ra=document.getElementById('ra-'+rid);if(ra)ra.classList.add('open');
+  // Timer
+  const timerEl=document.getElementById('rt-'+rid);
+  recTimer=setInterval(()=>{
+    recSecs++;
+    const mm=Math.floor(recSecs/60),ss=recSecs%60;
+    if(timerEl)timerEl.textContent=`${mm}:${ss.toString().padStart(2,'0')}`;
+    if(recSecs>=30)stopRec(); // auto stop 30s
+  },1000);
+  // Waveform
+  drawWave(rid);
+}
+
+function stopRec(){
+  if(!recorder)return;
+  try{if(recorder.state!=='inactive')recorder.stop();}catch(e){}
+  if(recStream){recStream.getTracks().forEach(t=>t.stop());recStream=null;}
+  clearInterval(recTimer);cancelAnimationFrame(animId);
+  const rb=document.getElementById('rb-'+recRowId);if(rb)rb.classList.remove('recording');
+  const ra=document.getElementById('ra-'+recRowId);if(ra)ra.classList.remove('open');
+  recorder=null;recRowId=null;recSecs=0;analyser=null;
+}
+
+function drawWave(rid){
+  const cv=document.getElementById('cv-'+rid);
+  if(!cv||!analyser)return;
+  const W=cv.offsetWidth||200,H=cv.offsetHeight||26;
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  const buf=new Uint8Array(analyser.frequencyBinCount);
+  function frame(){
+    if(!analyser)return;
+    animId=requestAnimationFrame(frame);
+    analyser.getByteTimeDomainData(buf);
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#E74C3C';ctx.lineWidth=1.8;ctx.beginPath();
+    const sl=W/buf.length;let x=0;
+    for(let i=0;i<buf.length;i++){
+      const y=(buf[i]/128)*(H/2);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      x+=sl;
+    }
+    ctx.stroke();
+  }
+  frame();
+}
+
+/* ─── Play back recording ────────────────────────────────── */
+function playRec(rid,btn){
+  stopAll();
+  // toggle off
+  if(recAudio&&recPlayBtn===btn){
+    recAudio.pause();recAudio=null;
+    btn.classList.remove('pr-playing');recPlayBtn=null;return;
+  }
+  stopRecPlayback();
+  const state=recBlobs[rid];if(!state)return;
+  const a=new Audio(state.url);
+  recAudio=a;recPlayBtn=btn;
+  btn.classList.add('pr-playing');
+  const p=a.play();
+  if(p)p.catch(()=>btn.classList.remove('pr-playing'));
+  a.onended=()=>{btn.classList.remove('pr-playing');recAudio=null;recPlayBtn=null;};
+}
+function stopRecPlayback(){
+  if(recAudio){recAudio.pause();recAudio=null;}
+  if(recPlayBtn){recPlayBtn.classList.remove('pr-playing');recPlayBtn=null;}
+}
+</script>
+</body>
+</html>
