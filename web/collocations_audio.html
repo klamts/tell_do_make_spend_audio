@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collocations – Tell, Do, Make, Spend</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    color: #1B2A4A;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1B2A4A 0%, #0D7377 100%);
+    color: white;
+    padding: 28px 24px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; }
+  header p  { font-size: 0.95rem; opacity: 0.85; }
+
+  .verb-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 16px 0;
+    flex-wrap: wrap;
+  }
+  .verb-tab {
+    padding: 10px 26px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.55;
+    color: white;
+  }
+  .verb-tab.active { opacity: 1; transform: scale(1.07); box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+  .verb-tab[data-verb="TELL"]  { background: #0D7377; }
+  .verb-tab[data-verb="DO"]    { background: #E67E22; }
+  .verb-tab[data-verb="MAKE"]  { background: #8E44AD; }
+  .verb-tab[data-verb="SPEND"] { background: #27AE60; }
+
+  .verb-section { display: none; padding: 20px 16px 40px; max-width: 860px; margin: 0 auto; }
+  .verb-section.active { display: block; }
+
+  .verb-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px; border-radius: 14px;
+    color: white; margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .verb-header h2 { font-size: 1.5rem; font-weight: 800; }
+  .verb-header .sub { font-size: 0.9rem; opacity: 0.88; margin-top: 3px; }
+  .verb-header .badge-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+  .badge {
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .collocation-block {
+    background: white;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .block-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .block-header .icon { font-size: 1.3rem; }
+  .block-header .num {
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800;
+    margin-left: auto;
+  }
+
+  .audio-rows { padding: 6px 0; }
+  .audio-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+  }
+  .audio-row:last-child { border-bottom: none; }
+  .audio-row:hover { background: #f8fafc; }
+
+  .row-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .row-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 22px;
+    flex-shrink: 0;
+  }
+  .row-type.Q  { color: #2980B9; }
+  .row-type.A1 { color: #27AE60; }
+  .row-type.A2 { color: #E67E22; }
+  .row-type.EX { color: #8E44AD; }
+
+  .row-text {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  .row-text .highlight { font-weight: 700; }
+
+  .play-btn {
+    background: none;
+    border: 2px solid #dde3ea;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    flex-shrink: 0;
+    color: #5A7184;
+    font-size: 0.85rem;
+  }
+  .play-btn:hover { border-color: currentColor; transform: scale(1.1); }
+  .play-btn.playing { color: white !important; border-color: transparent !important; }
+
+  .wav-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    width: 42px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  /* Question type pill */
+  .qtype {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .qtype.what  { background: #EBF5FB; color: #2980B9; }
+  .qtype.how   { background: #E8F8F5; color: #0D7377; }
+  .qtype.who   { background: #F5EEF8; color: #8E44AD; }
+  .qtype.do    { background: #FEF9E7; color: #E67E22; }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 3px;
+    background: #eee;
+    border-radius: 3px;
+    margin: 0 16px 10px;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.1s linear;
+  }
+
+  /* Section counter */
+  .section-info {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 14px;
+  }
+
+  /* Play all button */
+  .play-all-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 18px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .play-all-btn:hover { opacity: 0.88; transform: scale(1.01); }
+
+  /* Legend */
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    background: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 540px) {
+    .verb-tabs { gap: 7px; }
+    .verb-tab { padding: 8px 16px; font-size: 0.9rem; }
+    header h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📢 Collocations – Audio Practice</h1>
+  <p>TELL &nbsp;•&nbsp; DO &nbsp;•&nbsp; MAKE &nbsp;•&nbsp; SPEND &nbsp;|&nbsp; Click ▶ to listen</p>
+</header>
+
+<div class="verb-tabs">
+  <button class="verb-tab active" data-verb="TELL" onclick="switchVerb('TELL')">📣 TELL</button>
+  <button class="verb-tab" data-verb="DO"    onclick="switchVerb('DO')">✅ DO</button>
+  <button class="verb-tab" data-verb="MAKE"  onclick="switchVerb('MAKE')">🔨 MAKE</button>
+  <button class="verb-tab" data-verb="SPEND" onclick="switchVerb('SPEND')">⏰ SPEND</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ TELL ═══ -->
+<div class="verb-section active" id="section-TELL">
+  <div style="max-width:860px;margin:0 auto;padding-top:18px;">
+
+    <div class="verb-header" style="background:linear-gradient(135deg,#0D7377,#14A085);">
+      <div>
+        <h2>TELL</h2>
+        <div class="sub">Dùng khi truyền đạt thông tin / kể lại điều gì</div>
+        <div class="badge-list">
+          <span class="badge">a story</span>
+          <span class="badge">the time</span>
+          <span class="badge">a joke</span>
+          <span class="badge">a lie</span>
+          <span class="badge">the truth</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2980B9"></div> Question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div> Answer ✅</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div> Answer ❌/Different</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div> Follow-up</div>
+    </div>
+
+    <div class="section-info" id="info-TELL"></div>
+    <button class="play-all-btn" style="background:#0D7377" onclick="playAll('TELL')">▶ Play All – TELL</button>
+
+    <!-- tell a story -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#0D7377">
+        <span class="icon">📖</span> tell a story
+        <span class="num">1–4</span>
+      </div>
+      <div class="progress-bar" id="prog-tell-story"><div class="progress-fill" style="background:#0D7377"></div></div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">1</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When did you last <span class="highlight" style="color:#0D7377">tell a story</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">1.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/tell/1.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">2</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I told a story to my little brother last night.</div>
+          <span class="wav-label">2.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/tell/2.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">3</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I haven't told any stories recently — I've been too busy!</div>
+          <span class="wav-label">3.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/tell/3.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">4</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Who in your family can <span class="highlight" style="color:#0D7377">tell</span> good stories? <span class="qtype who">Who</span></div>
+          <span class="wav-label">4.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/tell/4.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- tell the time -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#0D7377">
+        <span class="icon">🕐</span> tell the time
+        <span class="num">5–8</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">5</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Can you <span class="highlight" style="color:#0D7377">tell the time</span> without looking at your phone? <span class="qtype do">Do/Can</span></div>
+          <span class="wav-label">5.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/tell/5.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">6</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes! I can tell the time on an analogue clock.</div>
+          <span class="wav-label">6.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/tell/6.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">7</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I always need my phone to check the time!</div>
+          <span class="wav-label">7.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/tell/7.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">8</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How did you learn to <span class="highlight" style="color:#0D7377">tell the time</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">8.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/tell/8.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- tell a joke -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#0D7377">
+        <span class="icon">😂</span> tell a joke
+        <span class="num">9–12</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">9</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When did you last <span class="highlight" style="color:#0D7377">tell a joke</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">9.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/tell/9.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">10</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I told a joke at lunch today — everyone laughed!</div>
+          <span class="wav-label">10.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/tell/10.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">11</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I'm not very good at telling jokes — I always forget the punchline!</div>
+          <span class="wav-label">11.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/tell/11.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">12</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Who <span class="highlight" style="color:#0D7377">tells</span> the funniest jokes in your family? <span class="qtype who">Who</span></div>
+          <span class="wav-label">12.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/tell/12.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- tell a lie -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#0D7377">
+        <span class="icon">🤥</span> tell a lie
+        <span class="num">13–16</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">13</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When did you last <span class="highlight" style="color:#0D7377">tell a lie</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">13.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/tell/13.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">14</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I told a small lie yesterday — I said I had finished my homework!</div>
+          <span class="wav-label">14.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/tell/14.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">15</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I try never to tell lies — honesty is important to me.</div>
+          <span class="wav-label">15.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/tell/15.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">16</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Why is it better to <span class="highlight" style="color:#0D7377">tell the truth</span> than tell a lie? <span class="qtype what">Why</span></div>
+          <span class="wav-label">16.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/tell/16.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- tell the truth -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#0D7377">
+        <span class="icon">💬</span> tell the truth
+        <span class="num">17–20</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">17</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you always <span class="highlight" style="color:#0D7377">tell the truth</span>? <span class="qtype do">Do</span></div>
+          <span class="wav-label">17.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/tell/17.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">18</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes, I always try to tell the truth even when it's hard.</div>
+          <span class="wav-label">18.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/tell/18.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">19</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">Sometimes I tell a small lie to avoid hurting someone's feelings.</div>
+          <span class="wav-label">19.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/tell/19.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">20</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How do you feel when someone doesn't <span class="highlight" style="color:#0D7377">tell you the truth</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">20.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/tell/20.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ DO ═══ -->
+<div class="verb-section" id="section-DO">
+  <div style="max-width:860px;margin:0 auto;padding-top:18px;">
+
+    <div class="verb-header" style="background:linear-gradient(135deg,#E67E22,#F39C12);">
+      <div>
+        <h2>DO</h2>
+        <div class="sub">Dùng cho các hoạt động / nhiệm vụ thường ngày</div>
+        <div class="badge-list">
+          <span class="badge">chores</span>
+          <span class="badge">homework</span>
+          <span class="badge">the dishes</span>
+          <span class="badge">exercise</span>
+          <span class="badge">your best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2980B9"></div> Question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div> Answer ✅</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div> Answer ❌/Different</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div> Follow-up</div>
+    </div>
+
+    <div class="section-info" id="info-DO"></div>
+    <button class="play-all-btn" style="background:#E67E22" onclick="playAll('DO')">▶ Play All – DO</button>
+
+    <!-- do chores -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#E67E22">
+        <span class="icon">🏠</span> do chores
+        <span class="num">1–4</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">1</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">What kind of chores do you <span class="highlight" style="color:#E67E22">do</span> at home? <span class="qtype what">What</span></div>
+          <span class="wav-label">1.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/do/1.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">2</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I do the dishes and sweep the floor every day.</div>
+          <span class="wav-label">2.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/do/2.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">3</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I don't do many chores — my parents do most of them!</div>
+          <span class="wav-label">3.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/do/3.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">4</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How often do you <span class="highlight" style="color:#E67E22">do chores</span>? <span class="qtype how">How often</span></div>
+          <span class="wav-label">4.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/do/4.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- do homework -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#E67E22">
+        <span class="icon">📝</span> do homework
+        <span class="num">5–8</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">5</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When do you usually <span class="highlight" style="color:#E67E22">do your homework</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">5.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/do/5.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">6</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I do my homework right after school before dinner.</div>
+          <span class="wav-label">6.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/do/6.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">7</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I always leave my homework until late at night — bad habit!</div>
+          <span class="wav-label">7.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/do/7.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">8</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How long does it take you to <span class="highlight" style="color:#E67E22">do your homework</span>? <span class="qtype how">How long</span></div>
+          <span class="wav-label">8.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/do/8.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- do the dishes -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#E67E22">
+        <span class="icon">🍽️</span> do the dishes
+        <span class="num">9–12</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">9</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you <span class="highlight" style="color:#E67E22">do the dishes</span> in your family? <span class="qtype do">Do</span></div>
+          <span class="wav-label">9.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/do/9.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">10</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes! I do the dishes every evening after dinner.</div>
+          <span class="wav-label">10.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/do/10.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">11</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">We have a dishwasher so nobody does the dishes by hand!</div>
+          <span class="wav-label">11.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/do/11.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">12</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Who usually <span class="highlight" style="color:#E67E22">does the dishes</span> in your family? <span class="qtype who">Who</span></div>
+          <span class="wav-label">12.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/do/12.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- do exercise -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#E67E22">
+        <span class="icon">🏃</span> do exercise
+        <span class="num">13–16</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">13</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When did you last <span class="highlight" style="color:#E67E22">do exercise</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">13.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/do/13.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">14</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I did exercise yesterday — I went for a run in the park.</div>
+          <span class="wav-label">14.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/do/14.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">15</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I haven't done exercise this week — I need to start!</div>
+          <span class="wav-label">15.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/do/15.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">16</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">What kind of exercise do you like to <span class="highlight" style="color:#E67E22">do</span>? <span class="qtype what">What kind</span></div>
+          <span class="wav-label">16.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/do/16.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- do your best -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#E67E22">
+        <span class="icon">⭐</span> do your best
+        <span class="num">17–20</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">17</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you always <span class="highlight" style="color:#E67E22">do your best</span> at school? <span class="qtype do">Do</span></div>
+          <span class="wav-label">17.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/do/17.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">18</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes, I always try to do my best even in subjects I find hard.</div>
+          <span class="wav-label">18.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/do/18.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">19</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">Sometimes I get lazy — I need to remind myself to do my best!</div>
+          <span class="wav-label">19.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/do/19.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">20</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How do you feel when you know you've <span class="highlight" style="color:#E67E22">done your best</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">20.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/do/20.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MAKE ═══ -->
+<div class="verb-section" id="section-MAKE">
+  <div style="max-width:860px;margin:0 auto;padding-top:18px;">
+
+    <div class="verb-header" style="background:linear-gradient(135deg,#8E44AD,#9B59B6);">
+      <div>
+        <h2>MAKE</h2>
+        <div class="sub">Dùng khi tạo ra / gây ra điều gì đó</div>
+        <div class="badge-list">
+          <span class="badge">a fire</span>
+          <span class="badge">a mistake</span>
+          <span class="badge">friends</span>
+          <span class="badge">noise</span>
+          <span class="badge">things</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2980B9"></div> Question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div> Answer ✅</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div> Answer ❌/Different</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div> Follow-up</div>
+    </div>
+
+    <div class="section-info" id="info-MAKE"></div>
+    <button class="play-all-btn" style="background:#8E44AD" onclick="playAll('MAKE')">▶ Play All – MAKE</button>
+
+    <!-- make a fire -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#8E44AD">
+        <span class="icon">🔥</span> make a fire
+        <span class="num">1–4</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">1</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you know how to <span class="highlight" style="color:#8E44AD">make a fire</span>? <span class="qtype do">Do</span></div>
+          <span class="wav-label">1.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/make/1.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">2</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes! I learned how to make a fire at summer camp last year.</div>
+          <span class="wav-label">2.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/make/2.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">3</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">No, I've never tried to make a fire — it sounds dangerous!</div>
+          <span class="wav-label">3.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/make/3.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">4</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Where did you <span class="highlight" style="color:#8E44AD">make the fire</span>? Was it indoors or outdoors? <span class="qtype what">Where</span></div>
+          <span class="wav-label">4.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/make/4.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- make a mistake -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#8E44AD">
+        <span class="icon">❌</span> make a mistake
+        <span class="num">5–8</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">5</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">When did you last <span class="highlight" style="color:#8E44AD">make a mistake</span>? <span class="qtype what">When</span></div>
+          <span class="wav-label">5.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/make/5.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">6</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I made a mistake in my maths test yesterday — I added wrong!</div>
+          <span class="wav-label">6.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/make/6.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">7</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I try to be careful so I don't make too many mistakes.</div>
+          <span class="wav-label">7.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/make/7.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">8</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">What do you do when you <span class="highlight" style="color:#8E44AD">make a mistake</span>? <span class="qtype what">What</span></div>
+          <span class="wav-label">8.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/make/8.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- make friends -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#8E44AD">
+        <span class="icon">🤝</span> make friends
+        <span class="num">9–12</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">9</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Is it easy for you to <span class="highlight" style="color:#8E44AD">make friends</span>? <span class="qtype do">Is it</span></div>
+          <span class="wav-label">9.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/make/9.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">10</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes, I find it easy to make friends — I love talking to people!</div>
+          <span class="wav-label">10.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/make/10.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">11</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I'm quite shy so it takes me a while to make new friends.</div>
+          <span class="wav-label">11.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/make/11.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">12</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How did you <span class="highlight" style="color:#8E44AD">make</span> your best friend? <span class="qtype how">How</span></div>
+          <span class="wav-label">12.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/make/12.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- make noise -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#8E44AD">
+        <span class="icon">📢</span> make noise
+        <span class="num">13–16</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">13</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you ever <span class="highlight" style="color:#8E44AD">make noise</span> when you should be quiet? <span class="qtype do">Do</span></div>
+          <span class="wav-label">13.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/make/13.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">14</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes! I sometimes make noise in the library by accident.</div>
+          <span class="wav-label">14.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/make/14.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">15</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">No, I'm usually very quiet — I don't like making noise!</div>
+          <span class="wav-label">15.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/make/15.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">16</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Who <span class="highlight" style="color:#8E44AD">makes</span> the most noise in your house? <span class="qtype who">Who</span></div>
+          <span class="wav-label">16.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/make/16.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- make things -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#8E44AD">
+        <span class="icon">🎨</span> make things
+        <span class="num">17–20</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">17</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">Do you like to <span class="highlight" style="color:#8E44AD">make things</span> with your hands? <span class="qtype do">Do</span></div>
+          <span class="wav-label">17.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/make/17.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">18</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">Yes! I love making things — I made a wooden box last weekend.</div>
+          <span class="wav-label">18.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/make/18.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">19</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I'm not very creative — I prefer buying things to making them!</div>
+          <span class="wav-label">19.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/make/19.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">20</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">What is the best thing you have ever <span class="highlight" style="color:#8E44AD">made</span>? <span class="qtype what">What</span></div>
+          <span class="wav-label">20.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/make/20.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SPEND ═══ -->
+<div class="verb-section" id="section-SPEND">
+  <div style="max-width:860px;margin:0 auto;padding-top:18px;">
+
+    <div class="verb-header" style="background:linear-gradient(135deg,#27AE60,#2ECC71);">
+      <div>
+        <h2>SPEND</h2>
+        <div class="sub">Dùng khi sử dụng thời gian hoặc tiền bạc</div>
+        <div class="badge-list">
+          <span class="badge">time</span>
+          <span class="badge">money</span>
+          <span class="badge">the weekend</span>
+          <span class="badge">the holiday</span>
+          <span class="badge">the evening</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#2980B9"></div> Question</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#27AE60"></div> Answer ✅</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E67E22"></div> Answer ❌/Different</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8E44AD"></div> Follow-up</div>
+    </div>
+
+    <div class="section-info" id="info-SPEND"></div>
+    <button class="play-all-btn" style="background:#27AE60" onclick="playAll('SPEND')">▶ Play All – SPEND</button>
+
+    <!-- spend time -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#27AE60">
+        <span class="icon">⏰</span> spend time
+        <span class="num">1–4</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">1</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">How often do you and your relatives <span class="highlight" style="color:#27AE60">spend time</span> together in the evening? <span class="qtype how">How often</span></div>
+          <span class="wav-label">1.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/spend/1.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">2</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">We spend time together every evening after dinner.</div>
+          <span class="wav-label">2.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/spend/2.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">3</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">We're all quite busy, so we only spend time together at weekends.</div>
+          <span class="wav-label">3.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/spend/3.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">4</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">What do you like to do when you <span class="highlight" style="color:#27AE60">spend time</span> with your family? <span class="qtype what">What</span></div>
+          <span class="wav-label">4.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/spend/4.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- spend money -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#27AE60">
+        <span class="icon">💰</span> spend money
+        <span class="num">5–8</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">5</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">What do you like to <span class="highlight" style="color:#27AE60">spend money</span> on? <span class="qtype what">What</span></div>
+          <span class="wav-label">5.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/spend/5.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">6</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I like to spend money on books and snacks!</div>
+          <span class="wav-label">6.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/spend/6.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">7</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I try to save money rather than spend it — I'm saving for a new bike!</div>
+          <span class="wav-label">7.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/spend/7.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">8</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">How much pocket money do you <span class="highlight" style="color:#27AE60">spend</span> each week? <span class="qtype how">How much</span></div>
+          <span class="wav-label">8.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/spend/8.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- spend the weekend -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#27AE60">
+        <span class="icon">📅</span> spend the weekend
+        <span class="num">9–12</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">9</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">How did you <span class="highlight" style="color:#27AE60">spend the weekend</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">9.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/spend/9.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">10</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I spent the weekend at the beach with my family — it was amazing!</div>
+          <span class="wav-label">10.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/spend/10.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">11</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I spent the weekend at home doing homework and resting.</div>
+          <span class="wav-label">11.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/spend/11.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">12</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Where would you love to <span class="highlight" style="color:#27AE60">spend</span> your next weekend? <span class="qtype what">Where</span></div>
+          <span class="wav-label">12.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/spend/12.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- spend the holiday -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#27AE60">
+        <span class="icon">🏖️</span> spend the holiday
+        <span class="num">13–16</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">13</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">How did you <span class="highlight" style="color:#27AE60">spend your last holiday</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">13.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/spend/13.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">14</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I spent my holiday visiting my grandparents in the countryside.</div>
+          <span class="wav-label">14.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/spend/14.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">15</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I spent my holiday at home — it was relaxing actually!</div>
+          <span class="wav-label">15.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/spend/15.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">16</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">Where would you like to <span class="highlight" style="color:#27AE60">spend</span> your next holiday? <span class="qtype what">Where</span></div>
+          <span class="wav-label">16.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/spend/16.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- spend the evening -->
+    <div class="collocation-block">
+      <div class="block-header" style="background:#27AE60">
+        <span class="icon">🌙</span> spend the evening
+        <span class="num">17–20</span>
+      </div>
+      <div class="audio-rows">
+        <div class="audio-row">
+          <div class="row-num" style="background:#2980B9">17</div>
+          <span class="row-type Q">Q</span>
+          <div class="row-text">How do you usually <span class="highlight" style="color:#27AE60">spend your evenings</span>? <span class="qtype how">How</span></div>
+          <span class="wav-label">17.wav</span>
+          <button class="play-btn" style="color:#2980B9" onclick="playAudio('audio/spend/17.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#27AE60">18</div>
+          <span class="row-type A1">A✅</span>
+          <div class="row-text">I usually spend the evening reading or watching TV with my family.</div>
+          <span class="wav-label">18.wav</span>
+          <button class="play-btn" style="color:#27AE60" onclick="playAudio('audio/spend/18.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#E67E22">19</div>
+          <span class="row-type A2">A❌</span>
+          <div class="row-text">I spend most evenings doing homework — very busy!</div>
+          <span class="wav-label">19.wav</span>
+          <button class="play-btn" style="color:#E67E22" onclick="playAudio('audio/spend/19.wav',this)">▶</button>
+        </div>
+        <div class="audio-row">
+          <div class="row-num" style="background:#8E44AD">20</div>
+          <span class="row-type EX">EX</span>
+          <div class="row-text">What is your favourite way to <span class="highlight" style="color:#27AE60">spend</span> a free evening? <span class="qtype what">What</span></div>
+          <span class="wav-label">20.wav</span>
+          <button class="play-btn" style="color:#8E44AD" onclick="playAudio('audio/spend/20.wav',this)">▶</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── Audio engine ────────────────────────────────────────────
+let currentAudio = null;
+let currentBtn   = null;
+let playAllQueue = [];
+let playAllIndex = 0;
+let isPlayingAll = false;
+
+const verbColors = { TELL:'#0D7377', DO:'#E67E22', MAKE:'#8E44AD', SPEND:'#27AE60' };
+
+function playAudio(src, btn) {
+  if (currentAudio) {
+    currentAudio.pause();
+    if (currentBtn) {
+      currentBtn.textContent = '▶';
+      currentBtn.classList.remove('playing');
+      currentBtn.style.background = '';
+    }
+    if (currentBtn === btn && !isPlayingAll) { currentAudio = null; currentBtn = null; return; }
+  }
+  const audio = new Audio(src);
+  currentAudio = audio;
+  currentBtn   = btn;
+  const verb   = getCurrentVerb();
+  btn.textContent = '⏸';
+  btn.classList.add('playing');
+  btn.style.background = verbColors[verb];
+  btn.style.borderColor = verbColors[verb];
+
+  audio.play().catch(() => {
+    btn.textContent = '▶';
+    btn.classList.remove('playing');
+    btn.style.background = '';
+    showNoAudio(btn);
+  });
+
+  audio.onended = () => {
+    btn.textContent = '▶';
+    btn.classList.remove('playing');
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    currentAudio = null;
+    currentBtn   = null;
+    if (isPlayingAll) advancePlayAll();
+  };
+}
+
+function showNoAudio(btn) {
+  const row = btn.closest('.audio-row');
+  if (!row) return;
+  const label = row.querySelector('.wav-label');
+  if (label) { const old = label.textContent; label.textContent = '⚠️'; setTimeout(()=>label.textContent=old,2000); }
+}
+
+function getCurrentVerb() {
+  const active = document.querySelector('.verb-section.active');
+  return active ? active.id.replace('section-','') : 'TELL';
+}
+
+// ─── Play All ────────────────────────────────────────────────
+function playAll(verb) {
+  if (isPlayingAll) { stopPlayAll(); return; }
+  const section = document.getElementById('section-' + verb);
+  const btns = section.querySelectorAll('.play-btn');
+  playAllQueue = Array.from(btns);
+  playAllIndex = 0;
+  isPlayingAll = true;
+  const playAllBtn = section.querySelector('.play-all-btn');
+  if (playAllBtn) playAllBtn.textContent = '⏹ Stop';
+  advancePlayAll();
+}
+
+function advancePlayAll() {
+  if (playAllIndex >= playAllQueue.length) { stopPlayAll(); return; }
+  const btn = playAllQueue[playAllIndex];
+  playAllIndex++;
+  const row = btn.closest('.audio-row');
+  if (row) {
+    row.style.background = '#fffde7';
+    setTimeout(()=>row.style.background='', 1500);
+  }
+  const wavLabel = btn.closest('.audio-row')?.querySelector('.wav-label');
+  const src = wavLabel ? buildSrc(getCurrentVerb(), wavLabel.textContent.trim()) : null;
+  if (src) playAudio(src, btn);
+  else advancePlayAll();
+}
+
+function buildSrc(verb, wavName) {
+  const map = { TELL:'audio/tell/', DO:'audio/do/', MAKE:'audio/make/', SPEND:'audio/spend/' };
+  return (map[verb] || '') + wavName;
+}
+
+function stopPlayAll() {
+  isPlayingAll = false;
+  playAllQueue = [];
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn) { currentBtn.textContent = '▶'; currentBtn.classList.remove('playing'); currentBtn.style.background=''; currentBtn=null; }
+  document.querySelectorAll('.play-all-btn').forEach(b => {
+    const v = b.onclick?.toString().match(/'(\w+)'/)?.[1];
+    if (v) b.textContent = '▶ Play All – ' + v;
+  });
+}
+
+// ─── Tab switching ───────────────────────────────────────────
+function switchVerb(verb) {
+  stopPlayAll();
+  document.querySelectorAll('.verb-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.verb-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + verb).classList.add('active');
+  document.querySelector('[data-verb="' + verb + '"]').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── Counter info ────────────────────────────────────────────
+document.querySelectorAll('.verb-section').forEach(sec => {
+  const verb = sec.id.replace('section-','');
+  const count = sec.querySelectorAll('.audio-row').length;
+  const info = sec.querySelector('#info-' + verb);
+  if (info) info.textContent = count + ' audio clips – click ▶ to play each one';
+});
+</script>
+</body>
+</html>
